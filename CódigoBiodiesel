@@ -82,7 +82,7 @@ void tanqueNaEt(){
 	fprintf(sc,"Tanque Et Na recebeu abastecimento\n",tanqNaEt.valueEt,tanqNaEt.valueNa);
 }
 void reator(){	
-		if(decantador.value <= 5){
+		if(decantador.value <= 10){
 			if((tanqOl.value >= 1) && (tanqNaEt.valueEt >= 2) && (tanqNaEt.valueNa >= 1)){
 				tanqNaEt.valueEt = tanqNaEt.valueEt - 2;
 				tanqNaEt.valueNa = tanqNaEt.valueNa - 1;
