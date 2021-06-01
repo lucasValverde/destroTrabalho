@@ -1,0 +1,237 @@
+#include <stdio.h>
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <thread>
+#include <vector>
+#include <chrono>
+#include <math.h>
+
+using namespace std;
+using namespace chrono;
+
+FILE * sc = fopen("bio.txt","w");
+
+struct TanqueOleo{
+	float value = 0;
+};
+
+struct TanqueNaEt{
+	float valueNa = 0;
+	float valueEt = 0;
+};
+
+struct TanqueEt{
+	float value = 0;
+};
+
+struct TanqueGlicerina{
+	float value = 0;
+};
+struct TanqueBio{
+	float value = 0;
+};
+
+struct Secador{
+	float value = 0;
+};
+
+struct Lavagem{
+	float value = 0;
+};
+
+struct Decantador{
+	float value = 0;
+};
+
+struct TanqueOleo tanqOl;
+struct TanqueNaEt tanqNaEt;
+struct Decantador decantador;
+struct TanqueGlicerina tanqGli;
+struct Secador secador;
+struct Secador secadorLavagem;
+struct Lavagem lavagem;
+struct TanqueBio bio;
+
+int tmpst = 0;
+int jks = 1;
+int jkp = 3; 
+
+int tempoSec1 = 0;
+int tempoSec2 = 0;
+
+int ciclo = 0;
+
+int orchestrator(int tempo);
+
+void tanqueO(){
+	if(jks == 10){
+			tanqOl.value = tanqOl.value + ((float) rand() / (RAND_MAX)) + 1;
+			fprintf(sc,"Tanque de oleo recebeu abastecimento\n");
+			jks = 1;
+		}else{
+			fprintf(sc,"Tanque de oleo nao recebeu abastecimento\n");
+			jks++;
+		}
+}
+void tanqueNaEt(){
+	tanqNaEt.valueNa = tanqNaEt.valueNa + 0.25;
+	tanqNaEt.valueEt = tanqNaEt.valueEt + 0.125;
+	fprintf(sc,"Tanque Et Na recebeu abastecimento\n",tanqNaEt.valueEt,tanqNaEt.valueNa);
+}
+void reator(){	
+		if(decantador.value <= 5){
+			if((tanqOl.value >= 1) && (tanqNaEt.valueEt >= 2) && (tanqNaEt.valueNa >= 1)){
+				tanqNaEt.valueEt = tanqNaEt.valueEt - 2;
+				tanqNaEt.valueNa = tanqNaEt.valueNa - 1;
+				tanqOl.value = tanqOl.value - 1; 
+				fprintf(sc,"Reator processou\n");
+				ciclo ++;
+				decantador.value = decantador.value + 5; //mensagem
+			}else{
+				fprintf(sc,"Reator sem materia prima\n");
+			}
+		}else{
+			fprintf(sc,"Decantador Cheio, Espera\n");
+		}	
+}
+void tanqueDecantador(){
+		if(jkp >= 5){
+			if(decantador.value >= 3){
+				decantador.value = decantador.value - 3;
+				tanqGli.value = tanqGli.value + 0.02;	//mensagem
+				secador.value = 0.09;	//mensagem
+				lavagem.value = 0.89;	//mensagem
+				fprintf(sc,"Decatandor processou\n");
+				jkp = 1;
+			}else{
+				fprintf(sc,"Decatandor sem materia prima\n");
+			}
+	
+		}else{
+			jkp++;
+			fprintf(sc,"Decantador em repouso\n");
+		}
+}
+void secaET(){
+	if(tempoSec1 == 4){
+		if(secador.value > 0){
+			secador.value = secador.value - (secador.value*0.03);
+			if(secador.value >= 0.3){
+				secador.value - 0.3;
+				tanqNaEt.valueEt = tanqNaEt.valueEt + 0.3;
+				fprintf(sc,"Secador processou 0.3\n");
+			}else if(secador.value < 0.3){
+				tanqNaEt.valueEt = tanqNaEt.valueEt + secador.value;	
+				fprintf(sc,"Secador processou apenas %f pois n tinha mais q isso\n",secador.value);
+				secador.value = 0;
+			}
+			tempoSec1 = 0;
+		}else{
+			fprintf(sc,"Secador nao possui materia prima\n");
+		}
+	}else{
+		tempoSec1++;
+	}
+}
+void lavag(){
+		if(	lavagem.value > 0 ){
+			secadorLavagem.value = secadorLavagem.value + (lavagem.value - (lavagem.value*0.225));
+			lavagem.value = 0;
+			fprintf(sc,"Lavagem processou\n");
+			
+		}else{
+			fprintf(sc,"Nao ha solucao para lavagem\n");
+		}
+	
+}
+void secaLav(){
+	if(tempoSec2 == 4){
+	if(secadorLavagem.value > 0){
+		secadorLavagem.value = secadorLavagem.value - (secadorLavagem.value*0.03);
+		if(secadorLavagem.value >= 0.3){
+			secadorLavagem.value - 0.3;
+			bio.value = bio.value + 0.3;
+			fprintf(sc,"SecadorLavagem processou 0.3\n");
+		}else if(secador.value < 0.3){
+			bio.value = bio.value + secadorLavagem.value;	
+			fprintf(sc,"SecadorLavagem processou apenas %f pois nao tinha mais q isso\n",secadorLavagem.value);
+			secadorLavagem.value = 0;
+		}
+		}else{
+			fprintf(sc,"SecadorLavagem nao possui materia prima\n");
+		}
+		tempoSec2=0;
+	}else{
+		tempoSec2++;
+	}
+}
+
+
+int main(){
+	seconds sec;
+	cout<<"Digite o tempo de simulacao em segundos:\n";
+	scanf("%d", &sec);
+	
+	int tempo = sec.count();
+	int p = orchestrator(tempo);
+}
+
+
+int orchestrator(int tempo){
+	while(tmpst<tempo){
+		//Inicio Orc Tranque Oleo
+		std::thread TQOOIL(tanqueO);
+		TQOOIL.join();
+		//Fim Orc Tranque Oleo
+	
+		//Inicio Orc Tranque NaEt
+		std::thread TQETNA(tanqueNaEt);
+		TQETNA.join();
+		//Fim Orc Tranque NaEt
+		
+		//Inicio reator
+		std::thread TQRE(reator);
+		TQRE.join();
+		//Fim reator
+		
+		//Inicio decantador
+		std::thread TQDE(tanqueDecantador);
+		TQDE.join();
+		//Fim decantador
+		
+		//Inicio SecadorET
+		std::thread TQSETE(secaET);
+		TQSETE.join();
+		//Fim SecadorET
+		
+		//Inicio lavagem
+		std::thread TQLA(lavag);
+		TQLA.join();
+		//Fim lavagem
+		
+		//Inicio secadorLavagem
+		std::thread TQSELA(secaLav);
+		TQSELA.join();
+		//Fim secador Lavagem
+		
+		fprintf(sc,"-------------------------------------------------\n");
+		fprintf(sc,"-Status dos Tanques no tempo: %d\n",tmpst);
+		fprintf(sc,"Tanque de Oleo tem: %f\n",tanqOl.value);
+		fprintf(sc,"Tanque de EtNa tem, Et: %.2f \t Na: %.2f\n",tanqNaEt.valueEt,tanqNaEt.valueNa);
+		fprintf(sc,"Tanque Decantador tem: %.2f\n",decantador.value);
+		fprintf(sc,"Tanques de Lavagem tem ao total %.2f\n",lavagem.value);
+		fprintf(sc,"O secadorET tem: %.2f\n",secador.value);
+		fprintf(sc,"O secadorLavagem tem: %.2f\n",secadorLavagem.value);
+		fprintf(sc,"Tanque de glicerina tem %.2f\n",tanqGli.value);
+		fprintf(sc,"Tanque de biodiesel tem %.2f\n",bio.value);
+		fprintf(sc,"Ciclos do reator: %d\n",ciclo);
+		
+
+		fprintf(sc,"-------------------------------------------------\n");
+		sleep(0.1);
+		tmpst++;	
+	}
+}
