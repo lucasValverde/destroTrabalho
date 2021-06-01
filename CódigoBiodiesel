@@ -120,7 +120,7 @@ void secaET(){
 		if(secador.value > 0){
 			secador.value = secador.value - (secador.value*0.03);
 			
-				tanqNaEt.valueEt = tanqNaEt.valueEt + 0.3;
+				tanqNaEt.valueEt = tanqNaEt.valueEt + 0.97;
 			
 			tempoSec1 = 0;
 		}else{
@@ -146,7 +146,7 @@ void secaLav(){
 	if(secadorLavagem.value > 0){
 		secadorLavagem.value = secadorLavagem.value - (secadorLavagem.value*0.03);
 		
-			bio.value = bio.value + 0.3;
+			bio.value = bio.value + 0.97;
 		
 		}else{
 			fprintf(sc,"SecadorLavagem nao possui materia prima\n");
