@@ -119,15 +119,9 @@ void secaET(){
 	if(tempoSec1 == 4){
 		if(secador.value > 0){
 			secador.value = secador.value - (secador.value*0.03);
-			if(secador.value >= 0.3){
-				secador.value - 0.3;
+			
 				tanqNaEt.valueEt = tanqNaEt.valueEt + 0.3;
-				fprintf(sc,"Secador processou 0.3\n");
-			}else if(secador.value < 0.3){
-				tanqNaEt.valueEt = tanqNaEt.valueEt + secador.value;	
-				fprintf(sc,"Secador processou apenas %f pois n tinha mais q isso\n",secador.value);
-				secador.value = 0;
-			}
+			
 			tempoSec1 = 0;
 		}else{
 			fprintf(sc,"Secador nao possui materia prima\n");
@@ -151,15 +145,9 @@ void secaLav(){
 	if(tempoSec2 == 4){
 	if(secadorLavagem.value > 0){
 		secadorLavagem.value = secadorLavagem.value - (secadorLavagem.value*0.03);
-		if(secadorLavagem.value >= 0.3){
-			secadorLavagem.value - 0.3;
+		
 			bio.value = bio.value + 0.3;
-			fprintf(sc,"SecadorLavagem processou 0.3\n");
-		}else if(secador.value < 0.3){
-			bio.value = bio.value + secadorLavagem.value;	
-			fprintf(sc,"SecadorLavagem processou apenas %f pois nao tinha mais q isso\n",secadorLavagem.value);
-			secadorLavagem.value = 0;
-		}
+		
 		}else{
 			fprintf(sc,"SecadorLavagem nao possui materia prima\n");
 		}
@@ -235,3 +223,10 @@ int orchestrator(int tempo){
 		tmpst++;	
 	}
 }
+
+
+
+
+
+
+
