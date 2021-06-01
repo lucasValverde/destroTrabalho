@@ -89,7 +89,7 @@ void reator(){
 				tanqOl.value = tanqOl.value - 1; 
 				fprintf(sc,"Reator processou\n");
 				ciclo ++;
-				decantador.value = decantador.value + 5; //mensagem
+				decantador.value = decantador.value + 5; 
 			}else{
 				fprintf(sc,"Reator sem materia prima\n");
 			}
@@ -101,9 +101,9 @@ void tanqueDecantador(){
 		if(jkp >= 5){
 			if(decantador.value >= 3){
 				decantador.value = decantador.value - 3;
-				tanqGli.value = tanqGli.value + 0.02;	//mensagem
-				secador.value = 0.09;	//mensagem
-				lavagem.value = 0.89;	//mensagem
+				tanqGli.value = tanqGli.value + 0.06;	//mensagem
+				secador.value = 0.27;	//mensagem
+				lavagem.value = 2.67;	//mensagem
 				fprintf(sc,"Decatandor processou\n");
 				jkp = 1;
 			}else{
@@ -223,7 +223,6 @@ int orchestrator(int tempo){
 		tmpst++;	
 	}
 }
-
 
 
 
